@@ -1,0 +1,20 @@
+{
+  "plugin_id": "hello-plugin-go",
+  "name": "Hello Plugin (Go)",
+  "version": "0.1.0",
+  "description": "Minimal reference plugin (Go SDK): a 1 Hz tick stream and an echo query.",
+  "autostart": false,
+  "protocol_version": "1.0",
+  "language": "go",
+  "capabilities": ["hello"],
+  "streams": [
+    {
+      "stream_id": "hello.tick",
+      "schema_family": "hello",
+      "schema_version": "v1",
+      "direction": "plugin_to_core"
+    }
+  ],
+  "commands": ["StartStream", "StopStream"],
+  "queries": ["hello.echo"]
+}
