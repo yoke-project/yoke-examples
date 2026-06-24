@@ -3,3 +3,7 @@
 
 # Rust per-crate build artifacts (plugins/<name>/target, tools/<name>/target)
 target/
+
+# Python per-plugin virtualenvs and caches
+.venv/
+__pycache__/

@@ -1,0 +1,5 @@
+# The Yoke Python SDK, resolved locally from the sibling repo (path relative to
+# this plugin directory) — the Python analogue of the Go examples' replace and
+# the Rust examples' path dependency. `just build` creates a per-plugin .venv and
+# installs this.
+-e ../../../yoke-sdk-python

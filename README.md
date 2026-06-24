@@ -17,33 +17,51 @@ development via `replace` directives in `go.mod`. It does not depend on
 ## Layout
 
 Examples are grouped into two categories, each holding self-contained
-subdirectories with one `main` package (one binary) apiece:
+subdirectories with one binary apiece. An example may be written in any of the
+three toolchains — Go (a `main.go`, SDK via a `replace` in `go.mod`), Rust (a
+`Cargo.toml`, SDK via a path dependency), or Python (a `main.py` +
+`requirements.txt`, SDK via an editable install):
 
 ```
 plugins/            plugins that REGISTER with Core (pluginapi, plugin protocol)
-└── <name>/
-    ├── main.go
-    └── manifest.json    consumed by Core's discovery
+├── <name>/         Go example
+│   ├── main.go
+│   └── manifest.json    consumed by Core's discovery
+├── <name>/         Rust example
+│   ├── Cargo.toml
+│   ├── src/main.rs
+│   └── manifest.json
+└── <name>/         Python example
+    ├── main.py
+    ├── requirements.txt
+    └── manifest.json
 tools/              CLIs that CONSUME a running Core's public surfaces
 └── <name>/             (Gateway REST + WebSocket — scriptable panel replacements)
     └── main.go
 ```
 
-`just build` discovers every `plugins/<name>/main.go` and `tools/<name>/main.go`
-and emits `build/<name>`. Adding an example is just adding a subdirectory — no
-justfile change. See `tools/README.md` for the tools category.
+`just build` discovers every `plugins/<name>/` and `tools/<name>/` and emits
+`build/<name>`, picking the toolchain from the marker file it finds: `main.go`
+→ `go build`; `Cargo.toml` → `cargo build`; `main.py` → create a per-plugin
+`.venv`, install `requirements.txt`, and write a launcher script. Adding an
+example is just adding a subdirectory — no justfile change. `just list` shows
+each example and its toolchain. See `tools/README.md` for the tools category.
 
 | Path | What |
 | --- | --- |
-| `plugins/hello-plugin-go/` | Minimal reference plugin built on `pluginapi` (code + manifest). |
+| `plugins/hello-plugin-go/` | Minimal reference plugin built on the Go SDK `pluginapi`. |
+| `plugins/hello-plugin-rust/` | The Rust twin, built on `yoke_sdk_rust::pluginapi`. |
+| `plugins/hello-plugin-python/` | The Python twin, built on `yoke_sdk_python.pluginapi`. |
 | `tools/` | CLI tools over the Gateway WebSocket/REST API (see `tools/README.md`). |
 
-### hello-plugin-go
+### hello-plugin-go / hello-plugin-rust / hello-plugin-python
 
-The Go member of a family of equivalent "hello" plugins. The Rust and Python
-SDKs will get their own `hello-plugin-rust` / `hello-plugin-python` showing the
-same surface; each registers under a distinct `plugin_id` so they can run side
-by side against one Core.
+A family of equivalent "hello" plugins, one per SDK. All three expose the
+identical surface (a 1 Hz `hello.tick` JSON stream and a `hello.echo` query) and
+register under a distinct `plugin_id`, so they can run side by side against one
+Core. The description below uses `hello-plugin-go`; the Rust and Python twins
+behave identically (run `build/hello-plugin-rust` / `build/hello-plugin-python`,
+default `YOKE_PLUGIN_ID` matching the directory name).
 
 A minimal plugin that demonstrates the full lifecycle against a running Core:
 

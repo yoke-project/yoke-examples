@@ -25,12 +25,13 @@ list:
     @for d in plugins/*/ tools/*/; do \
         name=$(basename "$d"); \
         if [ -f "$d/main.go" ]; then echo "$name  ($d) [go]"; \
-        elif [ -f "$d/Cargo.toml" ]; then echo "$name  ($d) [rust]"; fi; \
+        elif [ -f "$d/Cargo.toml" ]; then echo "$name  ($d) [rust]"; \
+        elif [ -f "$d/main.py" ]; then echo "$name  ($d) [python]"; fi; \
     done
 
 # ---- Conventional targets --------------------------------------------------
 
-# Build every example into build/<name> (Go and Rust)
+# Build every example into build/<name> (Go, Rust, Python)
 build:
     @mkdir -p build
     @for d in plugins/*/ tools/*/; do \
@@ -42,6 +43,12 @@ build:
             echo "building $name (rust)"; \
             cargo build --quiet --manifest-path "$d/Cargo.toml"; \
             cp "$d/target/debug/$name" "build/$name"; \
+        elif [ -f "$d/main.py" ]; then \
+            echo "building $name (python)"; \
+            ( cd "$d" && { [ -d .venv ] || python3 -m venv .venv; } && .venv/bin/pip install -q -r requirements.txt ); \
+            abs="$(cd "$d" && pwd)"; \
+            printf '#!/usr/bin/env bash\nexec "%s/.venv/bin/python" "%s/main.py" "$@"\n' "$abs" "$abs" > "build/$name"; \
+            chmod +x "build/$name"; \
         fi; \
     done
 
