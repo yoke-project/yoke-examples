@@ -1,0 +1,16 @@
+[package]
+name = "hello-plugin-rust"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "hello-plugin-rust"
+path = "src/main.rs"
+
+[dependencies]
+# The Yoke Rust SDK, resolved locally from the sibling repo (the Rust analogue
+# of the Go examples' `replace => ../yoke-sdk-go`).
+yoke-sdk-rust = { path = "../../../yoke-sdk-rust" }
+tokio = { version = "1", features = ["full"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v4"] }

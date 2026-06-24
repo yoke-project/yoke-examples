@@ -1,2 +1,5 @@
 # Compiled binaries
 /build/
+
+# Rust per-crate build artifacts (plugins/<name>/target, tools/<name>/target)
+target/

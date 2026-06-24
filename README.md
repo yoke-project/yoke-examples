@@ -1,7 +1,7 @@
 # yoke-examples
 
-Reference plugins and showcases for the Yoke project. These are programs that
-*use* Yoke (via the SDK), not parts of the framework. They double as
+Reference plugins and showcase tools for the Yoke project. These are programs
+that *use* Yoke (via the SDK), not parts of the framework. They double as
 runnable, end-to-end checks that the Core and the SDK work together.
 
 This repository is part of the Yoke project. The project-wide context and the
@@ -14,14 +14,36 @@ on `yoke-sdk-go` (and transitively `yoke-proto`), resolved locally during
 development via `replace` directives in `go.mod`. It does not depend on
 `yoke-core` at build time; it exercises a running Core at run time.
 
-## What's here
+## Layout
+
+Examples are grouped into two categories, each holding self-contained
+subdirectories with one `main` package (one binary) apiece:
+
+```
+plugins/            plugins that REGISTER with Core (pluginapi, plugin protocol)
+└── <name>/
+    ├── main.go
+    └── manifest.json    consumed by Core's discovery
+tools/              CLIs that CONSUME a running Core's public surfaces
+└── <name>/             (Gateway REST + WebSocket — scriptable panel replacements)
+    └── main.go
+```
+
+`just build` discovers every `plugins/<name>/main.go` and `tools/<name>/main.go`
+and emits `build/<name>`. Adding an example is just adding a subdirectory — no
+justfile change. See `tools/README.md` for the tools category.
 
 | Path | What |
 | --- | --- |
-| `cmd/hello-plugin/` | Minimal reference plugin built on `pluginapi`. |
-| `plugins/hello-plugin/manifest.json` | Its manifest (consumed by Core's discovery). |
+| `plugins/hello-plugin-go/` | Minimal reference plugin built on `pluginapi` (code + manifest). |
+| `tools/` | CLI tools over the Gateway WebSocket/REST API (see `tools/README.md`). |
 
-### hello-plugin
+### hello-plugin-go
+
+The Go member of a family of equivalent "hello" plugins. The Rust and Python
+SDKs will get their own `hello-plugin-rust` / `hello-plugin-python` showing the
+same surface; each registers under a distinct `plugin_id` so they can run side
+by side against one Core.
 
 A minimal plugin that demonstrates the full lifecycle against a running Core:
 
@@ -37,7 +59,7 @@ a plugin, each with a dev-friendly default:
 | Env var | Default | Meaning |
 | --- | --- | --- |
 | `YOKE_CORE_SOCKET` | `/run/yoke/core.sock` | Core plugin-protocol socket to dial |
-| `YOKE_PLUGIN_ID` | `hello-plugin` | plugin identity (must match the manifest) |
+| `YOKE_PLUGIN_ID` | `hello-plugin-go` | plugin identity (must match the manifest) |
 | `YOKE_BOOTSTRAP_TOKEN` | `dev` | registration token (any non-empty value is accepted when Core has not issued one) |
 | `YOKE_PLUGIN_SOCKET` | — | optional endpoint reported at registration |
 
@@ -47,8 +69,8 @@ Against a `yoke-core` checked out as a sibling, using its dev config:
 
 ```sh
 # 1. install this plugin's manifest where the dev Core discovers it
-mkdir -p ../yoke-core/.local/etc/plugins.d/hello-plugin
-cp plugins/hello-plugin/manifest.json ../yoke-core/.local/etc/plugins.d/hello-plugin/
+mkdir -p ../yoke-core/.local/etc/plugins.d/hello-plugin-go
+cp plugins/hello-plugin-go/manifest.json ../yoke-core/.local/etc/plugins.d/hello-plugin-go/
 
 # 2. start the Core (from the yoke-core dir)
 ( cd ../yoke-core && just run )
@@ -56,10 +78,10 @@ cp plugins/hello-plugin/manifest.json ../yoke-core/.local/etc/plugins.d/hello-pl
 # 3. build and run the plugin against the Core's socket
 just build
 YOKE_CORE_SOCKET="$(cd ../yoke-core && pwd)/.local/run/core.sock" \
-  ./build/hello-plugin
+  ./build/hello-plugin-go
 
 # 4. observe it from yoke-admin (in another shell, from yoke-core)
-( cd ../yoke-core && ./build/yoke-admin --config config/core.dev.yaml plugin show hello-plugin )
+( cd ../yoke-core && ./build/yoke-admin --config config/core.dev.yaml plugin show hello-plugin-go )
 ```
 
 Expected: the plugin logs `registered … session=…` and `stream hello.tick
@@ -70,7 +92,8 @@ started`; `yoke-admin plugin show` reports `runtime_state Streaming` with a
 
 | Command | Purpose |
 | --- | --- |
-| `just build` | Build the example binaries |
+| `just list` | List the discovered examples (`plugins/*`, `tools/*`) |
+| `just build` | Build every example into `build/<name>` |
 | `just test` | Run the tests |
 | `just lint` | Static analysis (`go vet`) |
 | `just fmt` | Format the Go sources |
