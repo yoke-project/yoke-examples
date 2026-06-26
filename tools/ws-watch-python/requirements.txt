@@ -1,0 +1,5 @@
+# A Gateway tool speaks REST + WebSocket and does not use the plugin SDK.
+# REST login uses the standard library (urllib); the WebSocket client is the
+# only third-party dependency. `just build` creates a per-tool .venv and
+# installs this.
+websockets>=12
