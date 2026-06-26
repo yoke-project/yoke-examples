@@ -1,0 +1,16 @@
+[package]
+name = "ws-watch-rust"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "ws-watch-rust"
+path = "src/main.rs"
+
+[dependencies]
+# A Gateway tool speaks REST + WebSocket; it does not use the plugin SDK.
+# Sync, lightweight stack: ureq for the REST login, tungstenite for the WS.
+ureq = { version = "2", default-features = false }
+tungstenite = "0.21"
+serde_json = "1"
+base64 = "0.22"

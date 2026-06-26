@@ -27,7 +27,7 @@ base64 payload). It is provided as a family, one per toolchain:
 | Tool | Toolchain | Status |
 | --- | --- | --- |
 | `ws-watch-go` | Go (`gorilla/websocket`) | available |
-| `ws-watch-rust` | Rust | planned |
+| `ws-watch-rust` | Rust (`tungstenite` + `ureq`) | available |
 | `ws-watch-python` | Python | planned |
 
 Usage (dev, against a Core with a matching `auth.users` entry and the Gateway
@@ -35,7 +35,10 @@ dev TCP listener on `localhost:8765`):
 
 ```sh
 just build
-./build/ws-watch-go --addr localhost:8765 --user dev --password dev
+./build/ws-watch-go   --addr localhost:8765 --user dev --password dev
+./build/ws-watch-rust --addr localhost:8765 --user dev --password dev
 # --subscribe stream.data   subscribe to categories (optional; data is broadcast anyway)
 # --json                    print raw JSON frames
 ```
+
+All members take the same flags and produce the same formatted output.
