@@ -43,3 +43,20 @@ just build
 ```
 
 All members take the same flags and produce the same formatted output.
+
+## Tests
+
+A pytest suite under `tools/tests/` covers the tools:
+
+- **unit** — ws-watch-python's pure helpers (`print_frame` formatting, base64
+  payload decoding, login cookie parsing), with no Core and no `websockets`
+  dependency;
+- **integration** — starts a real Core + `hello-plugin-go` and runs each built
+  `ws-watch-*` binary against the Gateway, asserting it receives `stream.data`.
+  These skip automatically when the Core or example binaries are not built.
+
+```sh
+just build          # build the example + tool binaries (and build ../yoke-core)
+just test-tools     # creates tools/tests/.venv, installs pytest, runs the suite
+```
+

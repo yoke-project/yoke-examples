@@ -63,3 +63,10 @@ lint:
 # Format the Go sources (Rust crates: `cargo fmt` per crate)
 fmt:
     gofmt -l -w .
+
+# Run the tools' pytest suite: unit tests + integration tests that drive the
+# built ws-watch tool binaries against a live Core. The integration tests skip
+# when the Core/example binaries are missing, so run `just build` (and build
+# ../yoke-core) first for full coverage.
+test-tools:
+    cd tools/tests && { [ -d .venv ] || python3 -m venv .venv; } && .venv/bin/pip install -q -r requirements.txt && .venv/bin/python -m pytest

@@ -7,3 +7,4 @@ target/
 # Python per-plugin virtualenvs and caches
 .venv/
 __pycache__/
+.pytest_cache/

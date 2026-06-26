@@ -1,0 +1,4 @@
+# Test runner for the tools suite. The unit tests import ws-watch-python's pure
+# helpers (no websockets needed); the integration tests drive the already-built
+# tool binaries as subprocesses, so only pytest is required here.
+pytest>=8

@@ -23,8 +23,6 @@ import sys
 import urllib.request
 from http.cookies import SimpleCookie
 
-from websockets.sync.client import connect
-
 
 def login(addr: str, user: str, password: str) -> str:
     """POST /api/v1/auth/login and return the yoke_session JWT from Set-Cookie."""
@@ -88,6 +86,10 @@ def main() -> None:
         sys.stdout.reconfigure(line_buffering=True)
     except (AttributeError, OSError):
         pass
+
+    # Imported here (not at module top) so the module's pure helpers can be
+    # unit-tested without the websockets dependency installed.
+    from websockets.sync.client import connect
 
     token = login(args.addr, args.user, args.password)
     print(f"ws-watch-python: logged in as {args.user!r}", file=sys.stderr)
