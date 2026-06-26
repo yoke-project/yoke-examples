@@ -2,7 +2,10 @@ module github.com/yoke-project/yoke-examples
 
 go 1.25.0
 
-require github.com/yoke-project/yoke-sdk-go v0.0.0
+require (
+	github.com/gorilla/websocket v1.5.3
+	github.com/yoke-project/yoke-sdk-go v0.0.0
+)
 
 require (
 	github.com/yoke-project/yoke-proto v0.0.0 // indirect
